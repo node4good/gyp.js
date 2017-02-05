@@ -126,6 +126,8 @@ function Ninja(options) {
   this.objExt = this.flavor === 'win32' ? '.obj' : '.o';
 
   this.bashAnd = this.flavor === 'win32' ? '&' : '&&';
+
+  this.actionNames = options.actionNames;
 }
 
 Ninja.prototype.expand = function expand(p, productDir) {
@@ -395,7 +397,11 @@ Ninja.prototype.actions = function actions() {
 
   let res = [];
   list.forEach((action) => {
-    const actionRule = action.action_name.replace(/\s/g, '_') + '_' + this.index;
+    const safeName = action.action_name.replace(/\s/g, '_');
+    const an = this.actionNames;
+    const counterRef = an[safeName] || (an[safeName] = {cnt: 0});
+    const actionRule = safeName + (counterRef.cnt || '');
+    counterRef.cnt++;
 
     const base = gyp.common.cachedRelative(this.configDir, this.srcDir);
     const toBase = gyp.common.cachedRelative(this.srcDir, this.configDir);
@@ -673,16 +679,18 @@ NinjaMain.prototype.rulesAndTargets = function rulesAndTargets() {
 
   let useCxx = false;
   const ninjas = this.ninjas;
+  const actionNames = {};
   const ninjaList = this.targetList.map((target, index) => {
     const ninja = new Ninja({
-      index: index,
+      index,
       outDir: this.outDir,
       configDir: this.configDir,
       topDir: this.topDir,
-      target: target,
+      target,
       targetDict: this.targetDicts[target].configurations[this.config],
-      ninjas: ninjas,
-      config: this.config
+      ninjas,
+      config: this.config,
+      actionNames
     });
     ninjas[target] = ninja;
     return ninja;

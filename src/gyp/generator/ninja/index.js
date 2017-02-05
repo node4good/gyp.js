@@ -395,7 +395,7 @@ Ninja.prototype.actions = function actions() {
 
   let res = [];
   list.forEach((action) => {
-    const actionRule = action.action_name + '_' + this.index;
+    const actionRule = action.action_name.replace(/\s/g, '_') + '_' + this.index;
 
     const base = gyp.common.cachedRelative(this.configDir, this.srcDir);
     const toBase = gyp.common.cachedRelative(this.srcDir, this.configDir);

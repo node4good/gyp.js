@@ -416,6 +416,10 @@ Ninja.prototype.actions = function actions() {
 
     res = res.concat(outputs);
 
+    if (action.process_outputs_as_sources === '1') {
+      this.targetDict.sources = (this.targetDict.sources || []).concat(action.outputs);
+    }
+
     this.n.build(actionRule, outputs, inputs, {
       orderOnlyDeps: deps
     });

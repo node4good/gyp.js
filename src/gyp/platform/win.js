@@ -239,7 +239,7 @@ function linkerFlags(linker) {
     if (stack_reserve_size) {
       let stack_commit_size = linker.StackCommitSize || '';
       if (stack_commit_size) stack_commit_size = ',' + stack_commit_size;
-      ldflags.push('/STACK' + stack_reserve_size + stack_commit_size);
+      ldflags.push('/STACK:' + stack_reserve_size + stack_commit_size);
     }
 
     ld('TerminalServerAware', {
